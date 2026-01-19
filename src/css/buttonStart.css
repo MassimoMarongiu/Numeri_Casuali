@@ -1,0 +1,91 @@
+#startButtonStyle {
+  /* Stato INIZIALE */
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  
+  /* Verde con bordo rosso */
+  background-color: #2E7D32; /* Verde più scuro */
+  border: 5px solid #D32F2F; /* Bordo rosso scuro */
+  
+  /* Ombra esterna più marcata */
+  box-shadow: 
+    0 6px 10px rgba(0, 0, 0, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2); /* Ombra interna */
+  
+  color: white;
+  font-size: 16px;
+  font-weight: bold;
+  font-family: 'Arial', sans-serif;
+  letter-spacing: 1px;
+  
+  cursor: pointer;
+  transition: all 0.15s ease;
+  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  user-select: none;
+  
+  /* Effetto 3D con due bordi */
+  position: relative;
+  overflow: hidden;
+}
+
+/* Bordo esterno aggiuntivo */
+#startButtonStyle::before {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  pointer-events: none;
+}
+
+/* Effetto hover */
+#startButtonStyle:hover {
+  background-color: #388E3C;
+  border-color: #F44336; /* Rosso più chiaro */
+  box-shadow: 
+    0 8px 15px rgba(0, 0, 0, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.3);
+  transform: translateY(-3px);
+}
+
+/* Stato ATTIVO (cliccato) */
+#startButtonStyle:active {
+  /* Diventa ROSSO con bordo BIANCO */
+  background-color: #F44336 !important;
+  border: 5px solid #FFFFFF !important;
+  
+  /* Ombra più piatta */
+  box-shadow: 
+    0 2px 5px rgba(0, 0, 0, 0.2),
+    inset 0 1px 3px rgba(0, 0, 0, 0.3);
+  
+  transform: translateY(2px) scale(0.96);
+  
+  /* Testo più luminoso */
+  color: #FFFFFF;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Effetto "clic" animato */
+#startButtonStyle.clicked {
+  animation: clickAnimation 0.3s ease;
+}
+
+@keyframes clickAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(0.96);
+  }
+}

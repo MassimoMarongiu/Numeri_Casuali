@@ -1,0 +1,654 @@
+/* Contenitore griglia */
+.numbers-grid-section {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 15px;
+  padding: 20px;
+  margin: 15px 0;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  display: flex;
+  flex-direction: column;
+}
+
+/* Grid principale - ADATTIVA senza scroll */
+.numbers-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  width: 100%;
+  /* Rimuovi le proprietà di scroll */
+  overflow: visible;
+  max-height: none;
+  /* Lascia che la griglia si espanda */
+  min-height: 0;
+  flex: 1;
+}
+
+/* Contenitore per entrambe le griglie */
+.dual-grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  margin: 20px 0;
+}
+
+/* Grid doppia affiancata su desktop */
+.dual-grid-section {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+  width: 100%;
+  min-height: 0;
+}
+
+/* Su mobile, una sotto l'altra */
+@media (max-width: 1024px) {
+  .dual-grid-section {
+    grid-template-columns: 1fr;
+    gap: 25px;
+  }
+  
+  .excluded-section {
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-left: 0;
+    padding-top: 20px;
+    margin-top: 10px;
+  }
+}
+
+/* Calcola dinamicamente la dimensione dei bottoni basata sul numero massimo */
+:root {
+  --grid-columns: 10; /* Valore di default, verrà sovrascritto da JS */
+}
+
+/* Stile bottone numero - DIMENSIONE ADATTIVA */
+.number-button {
+  aspect-ratio: 1;
+  width: 100%;
+  min-width: 40px;
+  border-radius: 10px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  font-size: clamp(0.9rem, 2vw, 1.5rem);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 2px;
+  box-sizing: border-box;
+}
+
+/* Adatta la griglia in base al numero di elementi */
+.numbers-grid {
+  /* Dinamico: più bottoni = bottoni più piccoli */
+  grid-template-columns: repeat(auto-fit, minmax(45px, 1fr));
+}
+
+/* Per pochi bottoni (meno di 10) */
+.numbers-grid.small-grid {
+  grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+/* Per molti bottoni (più di 30) */
+.numbers-grid.large-grid {
+  grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+  gap: 8px;
+}
+
+/* Effetto hover */
+.number-button:hover:not(:disabled) {
+  border-color: rgba(255, 255, 255, 0.6);
+  background: rgba(255, 255, 255, 0.15);
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Bottone selezionato - Sfondo ROSSO */
+.number-button.selected {
+  background: linear-gradient(135deg, #f44336, #d32f2f) !important;
+  border-color: #ffffff !important;
+  color: white !important;
+  transform: scale(1.03);
+  box-shadow: 
+    0 0 15px rgba(244, 67, 54, 0.4),
+    inset 0 1px 3px rgba(255, 255, 255, 0.2);
+}
+
+/* Animazione quando si seleziona */
+@keyframes selectPulse {
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(244, 67, 54, 0.7);
+  }
+  70% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 10px rgba(244, 67, 54, 0);
+  }
+  100% {
+    transform: scale(1.03);
+    box-shadow: 0 0 15px rgba(244, 67, 54, 0.4);
+  }
+}
+
+.number-button.selected {
+  animation: selectPulse 0.4s ease;
+}
+
+/* Bottone disabilitato */
+.number-button:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+  transform: none !important;
+}
+
+/* Numero all'interno del bottone */
+.button-number {
+  font-size: clamp(1rem, 2.5vw, 1.8rem);
+  font-weight: 800;
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+  z-index: 2;
+  position: relative;
+}
+
+/* Indicatore di selezione (checkmark) */
+.selected-indicator {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  background: white;
+  color: #f44336;
+  width: clamp(16px, 4vw, 22px);
+  height: clamp(16px, 4vw, 22px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.7rem, 1.5vw, 0.9rem);
+  font-weight: bold;
+  animation: popIn 0.25s ease;
+  z-index: 3;
+}
+
+@keyframes popIn {
+  0% {
+    transform: scale(0);
+  }
+  70% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Effetto di pressione */
+.number-button:active:not(:disabled) {
+  transform: scale(0.97);
+  transition: transform 0.08s ease;
+}
+
+/* Storia - Anche questa adattiva */
+.history-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  gap: 10px;
+  padding: 10px;
+  width: 100%;
+  overflow: visible;
+  max-height: none;
+}
+
+.history-item {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  position: relative;
+  min-height: 60px;
+  aspect-ratio: 1;
+}
+
+.history-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.history-item.latest {
+  background: rgba(0, 180, 219, 0.2);
+  border-color: #00b4db;
+  transform: scale(1.05);
+}
+
+.history-item.selected {
+  background: rgba(244, 67, 54, 0.2);
+  border-color: #f44336;
+}
+
+.history-item.excluded {
+  background: rgba(156, 39, 176, 0.2);
+  border-color: #9c27b0;
+}
+
+.history-item.available {
+  background: rgba(76, 175, 80, 0.2);
+  border-color: #4CAF50;
+}
+
+.history-number {
+  font-size: clamp(1.2rem, 3vw, 1.8rem);
+  font-weight: 700;
+  color: #00b4db;
+}
+
+.history-item.selected .history-number {
+  color: #f44336;
+}
+
+.history-item.excluded .history-number {
+  color: #9c27b0;
+}
+
+.history-item.available .history-number {
+  color: #4CAF50;
+}
+
+.history-status {
+  font-size: 1rem;
+  margin: 2px 0;
+  font-weight: bold;
+}
+
+.history-index {
+  font-size: 0.7rem;
+  color: #a0aec0;
+  margin-top: 2px;
+}
+
+/* SEZIONE ESCLUSI - Stili specifici */
+.excluded-section {
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  padding-left: 20px;
+}
+
+/* Bottoni esclusi */
+.excluded-grid .number-button.selected:not(.double-selected) {
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2) !important;
+  border-color: #ffffff !important;
+}
+
+/* Bottoni in conflitto */
+.number-button.conflict {
+  position: relative;
+  overflow: visible;
+}
+
+.number-button.conflict::before {
+  content: '⚠';
+  position: absolute;
+  top: -3px;
+  right: -3px;
+  background: #ffeb3b;
+  color: #000;
+  width: clamp(16px, 4vw, 20px);
+  height: clamp(16px, 4vw, 20px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(8px, 2vw, 10px);
+  font-weight: bold;
+  z-index: 4;
+}
+
+/* Statistiche griglia */
+.grid-stats {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  padding: 8px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  flex-wrap: wrap;
+}
+
+.stat-label {
+  color: #a0aec0;
+  font-size: 0.85rem;
+}
+
+.stat-value {
+  color: white;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.stat-percentage {
+  color: #4ecdc4;
+  font-size: 0.8rem;
+}
+
+/* Barra di progresso multipla */
+.multi-progress-bar {
+  width: 100%;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  margin: 15px 0;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.progress-segment {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: width 0.4s ease;
+  position: relative;
+  min-width: 20px; /* Assicura visibilità anche per percentuali piccole */
+}
+
+.selected-segment {
+  background: linear-gradient(90deg, #f44336, #e53935);
+}
+
+.excluded-segment {
+  background: linear-gradient(90deg, #9c27b0, #8e24aa);
+}
+
+.available-segment {
+  background: linear-gradient(90deg, #4CAF50, #388E3C);
+}
+
+.progress-label {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: white;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+  white-space: nowrap;
+  padding: 0 6px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.progress-stats {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 8px;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.85rem;
+}
+
+.progress-stat-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #e2e8f0;
+}
+
+.stat-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.selected-dot {
+  background: #f44336;
+}
+
+.excluded-dot {
+  background: #9c27b0;
+}
+
+.available-dot {
+  background: #4CAF50;
+}
+
+/* Footer stats aggiornate */
+.selected-stat {
+  color: #f44336;
+}
+
+.excluded-stat {
+  color: #9c27b0;
+}
+
+.available-stat {
+  color: #4CAF50;
+}
+
+.selected-value {
+  color: #f44336;
+}
+
+.excluded-value {
+  color: #9c27b0;
+}
+
+.available-value {
+  color: #4CAF50;
+}
+
+.footer-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.reset-excluded-btn {
+  background: rgba(163, 6, 6, 0.2);
+  color: #fafafa;
+  border: 1px solid #ffffff;
+  border-radius: 8px;
+  padding: 8px 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.reset-excluded-btn:hover:not(:disabled) {
+  background: rgba(176, 39, 39, 0.3);
+  transform: translateY(-1px);
+}
+
+.reset-excluded-btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+/* Bottoni di controllo specifici */
+.reset-max-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: #4ecdc4 !important;
+  color: #4ecdc4;
+}
+
+/* Stili per bottoni che sono sia selezionati che esclusi */
+.number-button.double-selected {
+  position: relative;
+}
+
+.number-button.double-selected::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(45deg, #f44336, #9c27b0);
+  border-radius: 8px;
+  z-index: 1;
+}
+
+.number-button.double-selected .button-number,
+.number-button.double-selected .selected-indicator {
+  position: relative;
+  z-index: 2;
+}
+
+.number-button.double-selected .selected-indicator {
+  background: #ffeb3b;
+  color: #333;
+}
+
+/* Stile specifico per la griglia selezionati */
+.selected-grid .number-button.selected:not(.double-selected) {
+  background: linear-gradient(135deg, #f44336, #d32f2f) !important;
+  border-color: #ffffff !important;
+}
+
+.selected-grid .number-button.double-selected {
+  border: 2px solid #ffeb3b !important;
+  box-shadow: 0 0 8px rgba(255, 235, 59, 0.5);
+}
+
+/* Stile specifico per la griglia esclusi */
+.excluded-grid .number-button.selected:not(.double-selected) {
+  background: linear-gradient(135deg, #9c27b0, #7b1fa2) !important;
+  border-color: #ffffff !important;
+}
+
+.excluded-grid .number-button.double-selected {
+  border: 2px solid #ffeb3b !important;
+  box-shadow: 0 0 8px rgba(255, 235, 59, 0.5);
+}
+
+/* Responsive avanzato */
+@media (max-width: 768px) {
+  .numbers-grid-section {
+    padding: 15px;
+    margin: 10px 0;
+  }
+  
+  .numbers-grid {
+    gap: 8px;
+    padding: 8px;
+  }
+  
+  .dual-grid-section {
+    gap: 15px;
+  }
+  
+  .number-button {
+    min-width: 35px;
+    border-radius: 8px;
+  }
+  
+  .grid-stats {
+    font-size: 0.8rem;
+    padding: 6px 10px;
+  }
+  
+  .multi-progress-bar {
+    height: 24px;
+    margin: 12px 0;
+  }
+  
+  .progress-label {
+    font-size: 0.65rem;
+  }
+  
+  .history-item {
+    min-height: 50px;
+    padding: 8px;
+  }
+  
+  .history-number {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .numbers-grid {
+    grid-template-columns: repeat(auto-fit, minmax(35px, 1fr));
+    gap: 6px;
+  }
+  
+  .number-button {
+    min-width: 30px;
+    border-width: 1.5px;
+  }
+  
+  .button-number {
+    font-size: 0.9rem;
+  }
+  
+  .selected-indicator {
+    width: 14px;
+    height: 14px;
+    font-size: 0.6rem;
+    top: 2px;
+    right: 2px;
+  }
+  
+  .history-list {
+    grid-template-columns: repeat(auto-fit, minmax(55px, 1fr));
+    gap: 6px;
+  }
+  
+  .history-item {
+    min-height: 45px;
+    padding: 6px;
+  }
+  
+  .history-number {
+    font-size: 1rem;
+  }
+  
+  .history-index {
+    font-size: 0.6rem;
+  }
+}
+
+/* Per schermi molto grandi */
+@media (min-width: 1600px) {
+  .numbers-grid {
+    grid-template-columns: repeat(auto-fit, minmax(60px, 1fr));
+    gap: 12px;
+  }
+  
+  .number-button {
+    min-width: 55px;
+  }
+  
+  .button-number {
+    font-size: 1.8rem;
+  }
+}
+
+/* Classi JS per controllare dinamicamente la griglia */
+.grid-size-small { grid-template-columns: repeat(auto-fit, minmax(70px, 1fr)); }
+.grid-size-medium { grid-template-columns: repeat(auto-fit, minmax(55px, 1fr)); }
+.grid-size-large { grid-template-columns: repeat(auto-fit, minmax(45px, 1fr)); }
+.grid-size-xlarge { grid-template-columns: repeat(auto-fit, minmax(40px, 1fr)); }
+
+.button-size-small { min-width: 60px; }
+.button-size-medium { min-width: 50px; }
+.button-size-large { min-width: 42px; }
+.button-size-xlarge { min-width: 38px; }
