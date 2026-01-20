@@ -42,8 +42,7 @@ function MainMenu({ generators, onCreateGenerator, onOpenGenerator, onDeleteGene
   return (
     <div className="main-menu-container">
       <header className="main-menu-header">
-        <h1>🎲 Gestore Generatori Numerici</h1>
-        <p className="subtitle">Crea e gestisci i tuoi generatori di numeri casuali</p>
+        <h1>🎲 Generatore Numerico</h1>
       </header>
 
       <main className="main-menu-content">
@@ -72,7 +71,7 @@ function MainMenu({ generators, onCreateGenerator, onOpenGenerator, onDeleteGene
         {/* Lista generatori esistenti */}
         <div className="generators-list-section">
           <h2>
-            I Tuoi Generator ({generators.length})
+            I Tuoi Generatori ({generators.length})
             {generators.length > 0 && (
               <span className="total-estractions">
                 Estrazioni totali: {generators.reduce((sum, gen) => sum + gen.data.history.length, 0)}
@@ -83,7 +82,6 @@ function MainMenu({ generators, onCreateGenerator, onOpenGenerator, onDeleteGene
           {generators.length === 0 ? (
             <div className="empty-state">
               <p>Non hai ancora creato generatori.</p>
-              <p>Crea il tuo primo generatore per iniziare!</p>
             </div>
           ) : (
             <div className="generators-grid">

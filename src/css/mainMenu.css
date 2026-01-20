@@ -3,11 +3,20 @@
   backdrop-filter: blur(10px);
   border-radius: 20px;
   border: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 30px;
-  min-height: calc(100vh - 40px);
+  padding: 3px;
+  /* SOSTITUITO min-height con height: fit-content */
+  height: fit-content;
   display: flex;
   flex-direction: column;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  /* Aggiunto margin per eventuale separazione dall'header/footer */
+  margin: 2px 0;
+}
+
+/* Rimuovi eventuali altezze fisse dai genitori se presenti */
+body, html, #root, .app {
+  height: auto !important;
+  min-height: 100vh;
 }
 
 .main-menu-header {
